@@ -1,31 +1,68 @@
+const user = document.getElementById('userLog');
+const pass = document.getElementById('passLog');
+
 //Data Form
 document.getElementById("btn_login").addEventListener("click", function( event ) {
-	searchUser()
+	if(user.value!=="" && pass.value!==""){
+		searchUser();
+	}
 }, false);
 
 
 function searchUser(){
-	const user = document.getElementById('userLog');
-	const pass = document.getElementById('passLog');
+	let data = new FormData()
+	data.append("pers_ced", user.value)
+	data.append("pers_nombre", pass.value)
 
-	let data = FormData()
-	data.append("", user.value);
-	data.append("", pass.value);
-
+	
+	
 	$.ajax({
-		url: "http://127.0.0.1:9000/Persona/Users",
-		data,
+		url: 'http://127.0.0.1:9000/Persona/users',
+		type: 'POST',
 		cache: false,
-        contentType: false,
+		contentType: false,
 		processData: false,
-        type: 'POST',
-		success: res => {
-			if (res == 1) {
-				user.value = "";
-				pass.value = "";
-			}else toastr.error(res, "Algo ha salido mal")
+		data,
+		beforeSend: function(){
+			$('#btn_login').val('Validando...');
 		}
+	})
+	.done(function(respuesta){
+		success: respuesta => {
+
+			if(respuesta == 1) {
+				const data = JSON.parse(res);
+				console.log(data)
+			} else {
+				console.log(respuesta, "Algo ha salido mal");
+			}
+		
+		}
+		console.log(respuesta);
+		/* if(!respuesta.error){
+			if (respuesta.tipo=='Admin') {
+				location='main_app/Admin/admin.php';
+			}else if (respuesta.tipo=='Usuario') {
+				location='main_app/Usuario/usuario.php';
+			}
+		}else {
+			$('.error').slideDown('slow');
+			setTimeout(function(){
+				$('.error').slideUp('slow');
+			},3000);
+			$('.botonlg').val('Iniciar Secion');
+		} */
+	})
+	.fail(function(resp){
+		console.log(resp.responseText);
+	})
+	.always(function(){
+		console.log("Complete");
+		//$('#btn_login').val('ACCESS');
 	});
+	
+	user.value = "";
+	pass.value = "";
 }
 
 

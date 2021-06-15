@@ -15,11 +15,23 @@ body{
 
 .wave{
 	position: fixed;
-	bottom: 0;
+	bottom: -20px;
 	left: 0;
 	height: 100%;
 	z-index: -1;
     background-color: #ffffff;
+}
+
+.error{
+    background-color: #E74F4F;
+    position: absolute;
+    top: 0;
+    padding: 10px 0 ;
+    border-radius:  0 0 5px 5px;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    display: none;
 }
 
 .container{

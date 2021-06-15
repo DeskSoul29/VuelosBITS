@@ -16,6 +16,16 @@
         }
         $cont=$cont+1;   
     }
+    /* $url = isset($_GET["url"]) ? $_GET["url"] : "Index/index";
+    $url = explode("/", $url);
+
+    $controller = "";
+    $method = "";
+
+    if(isset($url[0]))
+        $controller = $url[1]; */
+
+
     
     spl_autoload_register(function($class){
         if(file_exists(LB.$class . ".php")){

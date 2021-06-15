@@ -78,7 +78,7 @@ class PDOManager{
         } catch (PDOException $e) {
             return $e->getMessage();
         }
+
         $pdo = null;
-        
     }
 }

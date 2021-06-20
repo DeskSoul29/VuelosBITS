@@ -2,6 +2,6 @@
 class Views{
     function render($controller, $view){
         $controller = get_class($controller);
-        require VW . $controller . "/" . $view . ".html";
+        require VW . $controller . "/" . $view . ".php";
     }
 }

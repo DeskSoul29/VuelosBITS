@@ -7,9 +7,21 @@
             require VW . DF . "footer.html";
         }
         
-        function main(){
-            require VW . DF . "head.html";
-            $this->view->render($this, "main");
+        function viewUser(){
+            require VW . DF . "mainH.html";
+            $this->view->render($this, "viewUser");
+            require VW . DF . "footer.html";
+        }
+
+        function viewReception(){
+            require VW . DF . "mainH.html";
+            $this->view->render($this, "viewReception");
+            require VW . DF . "footer.html";
+        }
+
+        function viewRecervation(){
+            require VW . DF . "mainH.html";
+            $this->view->render($this, "reservation");
             require VW . DF . "footer.html";
         }
     }

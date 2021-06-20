@@ -1,3 +1,5 @@
+"use strict";
+
 const user = document.getElementById('userLog');
 const pass = document.getElementById('passLog');
 
@@ -11,11 +13,9 @@ document.getElementById("btn_login").addEventListener("click", function( event )
 
 function searchUser(){
 	let data = new FormData()
-	data.append("pers_ced", user.value)
-	data.append("pers_nombre", pass.value)
+	data.append("userLG", user.value)
+	data.append("passLG", pass.value)
 
-	
-	
 	$.ajax({
 		url: 'http://127.0.0.1:9000/Persona/users',
 		type: 'POST',
@@ -28,43 +28,33 @@ function searchUser(){
 		}
 	})
 	.done(function(respuesta){
-		success: respuesta => {
+		const obj = JSON.parse(respuesta);
+		if(!obj.error){
+			if (obj.rol == 'RECEPCIONISTA') {
+				location='viewReception';
+			}else if (obj.rol == 'PASAJERO') {
+				location='viewUser';
+			}
 
-			if(respuesta == 1) {
-				const data = JSON.parse(res);
-				console.log(data)
-			} else {
-				console.log(respuesta, "Algo ha salido mal");
-			}
-		
-		}
-		console.log(respuesta);
-		/* if(!respuesta.error){
-			if (respuesta.tipo=='Admin') {
-				location='main_app/Admin/admin.php';
-			}else if (respuesta.tipo=='Usuario') {
-				location='main_app/Usuario/usuario.php';
-			}
-		}else {
+		} else {
 			$('.error').slideDown('slow');
 			setTimeout(function(){
 				$('.error').slideUp('slow');
-			},3000);
-			$('.botonlg').val('Iniciar Secion');
-		} */
+			},5000);
+
+			$('#btn_login').val('ACCESS');
+		}
 	})
 	.fail(function(resp){
 		console.log(resp.responseText);
 	})
 	.always(function(){
 		console.log("Complete");
-		//$('#btn_login').val('ACCESS');
 	});
-	
+
 	user.value = "";
 	pass.value = "";
 }
-
 
 
 //Animations

@@ -1,70 +1,51 @@
 <?php
-class PersonaModel extends Connection{
+class PersonaModel extends DB{
 
     function searchUser($user, $pass){
-        $hostname = 'localhost';
-        $database = 'db_vuelos';
-        $username = 'desksoul';
-        $password = 'jcrn2917';
-
-        $conexion = new mysqli($hostname, $username, $password, $database);
-
-        $consulta = "SELECT email_usuario, contrasena 
-                    FROM usuario 
-                    WHERE email_usuario = '".$user."' AND contrasena = '".$pass."' ";
-
+        sleep(1);
+        session_start();
         
-        if($sentencia= $conexion->prepare($consulta)){
-        //    $sentencia->execute();
-            $data = $sentencia->execute();
-            $sentencia->store_result();
-
-            printf("Numero de filas %d.\n", $sentencia->num_rows);
-            $result = $sentencia->fetch();
-
-            printf("Result");
-            print_r($result);
-            printf("Data");
-            print_r($data);
-
-            $data = array('results' => $data);
-
-            echo json_encode($data);
-            $sentencia->close();
-        }
+        $sql = "SELECT `usuario`.`usuario`, `usuario`.`contraseña`, `usuario`.`email`, `persona`.`roll`
+                    FROM `usuario` 
+                        LEFT JOIN `persona` ON `usuario`.`cedula` = `persona`.`cedula`
+                        WHERE `usuario`.`email`= '".$user."' AND `usuario`.`contraseña`= '".$pass."' ";
         
+        try {
+            $sentencia = $this->connect()->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+            $sentencia->execute();
 
-        mysqli_query($conexion, $consulta) or die(mysqli_connect_error());
-        mysqli_close($conexion);
-        
+            if($sentencia->rowCount() > 0):
+                $datos = $sentencia->fetch();
+                $_SESSION['username'] = $datos['usuario'];
+                $_SESSION['rol'] = $datos['roll'];
+                echo json_encode(array('error'=>false,'rol'=> $datos['roll']));
 
-        /* $hostname = 'localhost';
-        $database = 'db_vuelos';
-        $username = 'desksoul';
-        $password = 'jcrn2917';
-        $mysqli = new mysqli($hostname, $username, $password, $database);
+            else:
 
-        $consulta = $mysqli->query("SELECT `email_usuario` 
-                                    FROM `usuario` 
-                                    WHERE `email_usuario` = '".$user."'");
-
-        if($consulta->num_rows==1):
-            $datos = $consulta->fetch_assoc();
-            $e = json_encode(array('error'=>false,'tipo'=> $datos['email_usuario']));
-        else:
-            $e = json_encode(array('error'=>true));
-        endif;
-
-        return $e;
-
-        $mysqli->close(); */
-        
-
-        /* $columns = "`email_usuario`,`contraseña`";
-        $tables = "usuario";
-        $where = "`email_usuario` = 'jhannavarro2001@gmail.com'";
-        $params = "";
-
-        return $this->db->select($columns, $tables, $where, $params); */
+                echo json_encode(array('error'=>true));
+            endif;
+            
+            $sentencia = null;
+          }
+          catch (PDOException $e) {
+            print $e->getMessage();
+          }
     }
+
+    function selectCities(){
+        $sql = "SELECT ciudad_aeropuerto FROM aeropuerto ";
+
+        try {
+            $sentencia = $this->connect()->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+            $sentencia->execute();
+
+            $datos = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+            return array('results' => $datos);
+            
+          }catch (PDOException $e) {
+            return $e->getMessage();
+          }
+          $sentencia = null;
+    }
+    
 }

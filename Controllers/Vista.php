@@ -19,9 +19,8 @@
             require VW . DF . "footer.html";
         }
 
-        function viewRecervation(){
+        function viewReservation(){
             require VW . DF . "mainH.html";
-            $this->view->render($this, "reservation");
-            require VW . DF . "footer.html";
+            $this->view->render($this, "viewReservation");
         }
     }

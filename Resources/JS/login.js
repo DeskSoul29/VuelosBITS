@@ -24,7 +24,7 @@ function searchUser(){
 		processData: false,
 		data,
 		beforeSend: function(){
-			$('#btn_login').val('Validando...');
+			$('#btn_login').val('validating...');
 		}
 	})
 	.done(function(respuesta){

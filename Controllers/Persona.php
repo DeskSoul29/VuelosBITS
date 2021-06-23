@@ -16,6 +16,18 @@
             else
                 echo $res;
         }
+
+        function getFlights(){
+            $origen= $_POST['origen'];
+            $destino= $_POST['destino'];
+            $fecha= $_POST['fecha'];
+            
+            $res = $this->model->selectTravels($origen, $destino, $fecha);
+            if (is_array($res)) 
+                echo json_encode($res);
+            else
+                echo $res;
+        }
         
 
     }

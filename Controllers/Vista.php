@@ -23,4 +23,19 @@
             require VW . DF . "mainH.html";
             $this->view->render($this, "viewReservation");
         }
+
+        function payments(){
+            require VW . DF . "mainH.html";
+            $this->view->render($this, "payments");
+        }
+
+        function reserves(){
+            require VW . DF . "mainH.html";
+            $this->view->render($this, "reserves");
+        }
+
+        function financialBalance(){
+            require VW . DF . "mainH.html";
+            $this->view->render($this, "fnalBalan");
+        }
     }

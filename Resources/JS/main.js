@@ -22,11 +22,9 @@ document.getElementById("from-Search").addEventListener("submit", function(event
 	if(document.getElementById("Destiny").value == "Select"){
 		todo_correcto = false;
 		toastr.error("Select a Destination")
-	}
-
-	if(document.getElementById("Destiny").value == document.getElementById("Origin").value){
-		todo_correcto = false;
-		toastr.error("Select a different Destination")
+	}else if(document.getElementById("Destiny").value == document.getElementById("Origin").value){
+			todo_correcto = false;
+			toastr.error("Select a different Destination")
 	}
 
 	if(document.getElementById('date').value == null || document.getElementById('date').value == ""){

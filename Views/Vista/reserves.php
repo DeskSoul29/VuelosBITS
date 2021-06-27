@@ -17,9 +17,6 @@
 
             unset($_SESSION['id_reserva']);
             unset($_SESSION['precio_reserva']);
-            unset($_SESSION['cant_pasajeros']);
-            unset($_SESSION['org_res']);
-            unset($_SESSION['des_res']);
             
         }else if($rol=="PASAJERO"){
             header("location: ../Vista/viewUser" );
@@ -84,74 +81,43 @@
                     <div class="jxbuIk">
 
                     <div class="row" id="cardRes">
-
+                        
                         <?php
                             $mysqli = new mysqli("localhost","desksoul","jcrn2917","db_vuelos");
-                            $resultado = $mysqli->query("SELECT reserva.nombre_reserva, reserva.valor_pasaj, vuelos.ciudad_origen_vuelo, vuelos.ciudad_destino_vuelo, pasaXreser.estado_pago, reserva.cant_pasaj 
+                            
+                            $resultado = $mysqli->query("SELECT reserva.vuelo_id, reserva.nombre_reserva, reserva.valor_pasaj, vuelos.ciudad_origen_vuelo, vuelos.ciudad_destino_vuelo, pasaXreser.estado_pago, reserva.cant_pasaj 
                                         FROM reserva 
                                         LEFT JOIN vuelos ON reserva.vuelo_id = vuelos.id_vuelo 
                                         LEFT JOIN pasaXreser ON pasaXreser.nombre_reserva = reserva.nombre_reserva
-                                        WHERE pasaXreser = 'SIN PAGAR';");
+                                        WHERE pasaXreser.estado_pago = 'SIN PAGAR'
+                                        GROUP BY reserva.nombre_reserva;");
+                            
+                            $row_cnt = $resultado->num_rows;
                             $resultado->data_seek(0);
-                            while ($fila = $resultado->fetch_assoc()) {
-                                echo "
-                                <div class='col-sm-3' style='margin-bottom:20px;'>
-                                    <div class='card border-primary mb-3'>
-                                        <div class='card-body'>
-                                            <h5 class='card-title'><img src='/Resources/Images/viaje-ida-y-vuelta.png'> ".$fila['ciudad_origen_vuelo']." -> ".$fila['ciudad_destino_vuelo']."</h5>
-                                            <ul class='list-group list-group-flush'>
-                                                <li class='list-group-item'><img src='/Resources/Images/estado-financiero.png'> Status: ".$fila['estado_pago']."</li>
-                                                <li class='list-group-item'><img src='/Resources/Images/tarjeta-de-embarque.png'> ID Reserve: ".$fila['nombre_reserva']."</li>
-                                                <li class='list-group-item'><img src='/Resources/Images/pasajero.png'> Passengers: ".$fila['cant_pasaj']."</li>
-                                                <li class='list-group-item'><img src='/Resources/Images/money.png'> Value: $".$fila['valor_pasaj']."</li>
-                                            </ul>
-                                        </div>
-                                        <div class='card-footer bg-transparent border-primary' style='align-content: center; display: grid;'>
-                                            <a onclick='deleteReserv(".$fila['nombre_reserva'].");' class='btn btn-danger' style='color: #fff;'>Delete Reserve</a>
-                                        </div>
-                                    </div>
-                                </div> 
-                                ";    
-                            }
+                                while ($fila = $resultado->fetch_assoc()) {
 
-                        ?>
-                        
-                    
-                        <!-- <div class="col-sm-4" style="margin-bottom:20px;">
-                            <div class="card border-primary mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Cucuta -> Bogota</h5>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">Cras justo odio</li>
-                                        <li class="list-group-item">Dapibus ac facilisis in</li>
-                                        <li class="list-group-item">Vestibulum at eros</li>
-                                    </ul>
-                                </div>
-                                <div class="card-footer bg-transparent border-primary" style="align-content: center; display: grid;">
-                                    <a href="#" class="btn btn-primary" >Go somewhere</a>
-                                </div>
-                            </div>
-                        </div> -->
-                        
-                    
+                                    echo "
+                                    <div class='col-sm-3' style='margin-bottom:20px;'>
+                                        <div class='card border-primary mb-3'>
+                                            <div class='card-body'>
+                                                <h5 class='card-title'><img src='/Resources/Images/viaje-ida-y-vuelta.png'> ".$fila['ciudad_origen_vuelo']." -> ".$fila['ciudad_destino_vuelo']."</h5>
+                                                <ul class='list-group list-group-flush'>
+                                                    <li class='list-group-item'><img src='/Resources/Images/estado-financiero.png'> ID Airplane: ".$fila['vuelo_id']."</li>
+                                                    <li class='list-group-item'><img src='/Resources/Images/tarjeta-de-embarque.png'> ID Reserve: ".$fila['nombre_reserva']."</li>
+                                                    <li class='list-group-item'><img src='/Resources/Images/pasajero.png'> Passengers: ".$fila['cant_pasaj']."</li>
+                                                    <li class='list-group-item'><img src='/Resources/Images/money.png'> Value: $".number_format($fila['valor_pasaj'])."</li>
+                                                </ul>
+                                            </div>
+                                            <div class='card-footer bg-transparent border-primary' style='align-content: center; display: grid;'>
+                                                <a onclick='addPay(".$fila['nombre_reserva'].", ".$fila['valor_pasaj'].");' class='btn btn-success' style='margin-bottom:8px;color: #fff;'>Pay</a>
+                                                <a onclick='deleteReserv(".$fila['nombre_reserva'].");' class='btn btn-danger' style='color: #fff;'>Delete Reserve</a>
+                                            </div>
+                                        </div>
+                                    </div> ";   
+                            }
+                        ?>                   
                     </div>
 
-
-                        <!-- <div class="card" style="margin-bottom: 30px;">
-                            <div class="card-body">
-                            <h5 class="card-title">Cucuta -> Bogota</h5>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Cras justo odio</li>
-                                <li class="list-group-item">Dapibus ac facilisis in</li>
-                                <li class="list-group-item">Vestibulum at eros</li>
-                            </ul>
-                            <a class="card-text">ID Reserva: </a><br>
-                            <a class="card-text">Estado: </a><br>
-                            <a class="card-text">Precio: </a><br>
-                            <a href="#" style="margin-left:1080px;" class="btn btn-primary">Go somewhere</a>
-                            </div>
-                        </div> -->
-                        
                     </div>
                 </div>
 
@@ -164,6 +130,45 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/Resources/JS/jquery-3.4.1.min.js"></script>
 <script src="/Resources/JS/toastr.min.js"></script>
-<script src="/Resources/JS/deleteRes.js"></script>
+
+<script>
+    function addPay(id, monto){
+        let data = new FormData()
+        data.append("id_res",id)
+        data.append("monto",monto)
+
+        $.ajax({
+            url: "http://127.0.0.1:9000/Persona/addPay",
+            data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+        }).done(function(respuesta){
+            location='payments';
+            
+        })
+    }
+
+    function deleteReserv(id){
+        let data = new FormData()
+        data.append("id_res",id);
+
+        $.ajax({
+            url: "http://127.0.0.1:9000/Persona/deleteRes",
+            data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+        }).done(function(respuesta){
+            if(respuesta != 1){
+                toastr.error("Error")
+            }else{
+                location.reload();
+            }
+        })
+    }   
+</script>
 
 </main>

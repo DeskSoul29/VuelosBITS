@@ -18,9 +18,6 @@
 
       unset($_SESSION['id_reserva']);
       unset($_SESSION['precio_reserva']);
-      unset($_SESSION['cant_pasajeros']);
-      unset($_SESSION['org_res']);
-      unset($_SESSION['des_res']);
       
    }else if($rol=="PASAJERO"){
       header("location: ../Vista/viewUser");

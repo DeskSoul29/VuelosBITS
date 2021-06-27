@@ -68,9 +68,16 @@ class PersonaModel extends DB{
   }
 
   function selectTravels($origen, $destino, $fecha){
-    $sql = "SELECT id_vuelo, ciudad_origen_vuelo, ciudad_destino_vuelo, fecha_vuelo 
+    $sql = "SELECT vuelos.id_vuelo, vuelos.ciudad_origen_vuelo, vuelos.ciudad_destino_vuelo, vuelos.fecha_vuelo, COUNT(pasaXreser.estado_pago)as suma
             FROM vuelos 
-            WHERE ciudad_origen_vuelo='".$origen."' AND ciudad_destino_vuelo = '".$destino."' AND fecha_vuelo='".$fecha."'; ";
+              LEFT JOIN reserva ON reserva.vuelo_id = vuelos.id_vuelo 
+              LEFT JOIN pasaXreser ON pasaXreser.nombre_reserva = reserva.nombre_reserva
+                WHERE vuelos.ciudad_origen_vuelo='".$origen."' AND vuelos.ciudad_destino_vuelo='".$destino."' AND vuelos.fecha_vuelo='".$fecha."'
+                GROUP BY vuelos.id_vuelo";
+
+    // $sql = "SELECT id_vuelo, ciudad_origen_vuelo, ciudad_destino_vuelo, fecha_vuelo 
+    //         FROM vuelos 
+    //         WHERE ciudad_origen_vuelo='".$origen."' AND ciudad_destino_vuelo = '".$destino."' AND fecha_vuelo='".$fecha."'; ";
 
     try {
       $sentencia = $this->connect()->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
@@ -106,16 +113,28 @@ class PersonaModel extends DB{
   }
 
   function deletResse($id_res){
-    $sql = "DELETE FROM `pasaXreser` WHERE `nombre_reserva`= ':id_res'";
-    $q = $this->connect()->prepare($sql);
-    $q-> bindParam(':id_res', $id_res, PDO::PARAM_INT);
-    $q->execute();
-      if($q->rowCount() > 0){
-        return 1;
+    
+    try {
 
-      }else{
-        return $q->errorInfo(); 
-      }
+      $sql = "DELETE FROM pasaXreser WHERE nombre_reserva = :id";
+	    $stmt = $this->connect()->prepare($sql);
+	    $stmt->bindParam(':id', $id_res);
+	    $stmt->execute();
+
+      $sql2 = "DELETE FROM equipaje WHERE reserva_id = :id";
+      $stmt2 = $this->connect()->prepare($sql2);
+	    $stmt2->bindParam(':id', $id_res);
+	    $stmt2->execute();
+
+      $sql3 = "DELETE FROM reserva WHERE nombre_reserva = :id";
+      $stmt3 = $this->connect()->prepare($sql3);
+	    $stmt3->bindParam(':id', $id_res);
+	    $stmt3->execute();
+
+      return 1;
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+    }
 
   }
 
@@ -128,8 +147,6 @@ class PersonaModel extends DB{
 
       $_SESSION['id_reserva'] = $id_res;
       $_SESSION['precio_reserva'] = $precio;
-      $_SESSION['org_res'] = $origen;
-      $_SESSION['des_res'] = $destino;
       
 
       $sentencia = $this->connect()->prepare("INSERT INTO reserva (nombre_reserva, tipo_reserva, cant_pasaj, vuelo_id, valor_pasaj) 
@@ -150,7 +167,7 @@ class PersonaModel extends DB{
       if($maleta == "Yes"){
         $sentencia = $this->connect()->prepare("INSERT INTO equipaje (id_maleta, tipo_maleta, origen_equipaje, destino_equipaje, reserva_id) 
                 VALUES (?, ?, ?, ?, ?)");
-                $sentencia->bindParam(1, rand(1, 9000));
+                $sentencia->bindParam(1, rand(1000, 9000));
                 $sentencia->bindParam(2, $check);
                 $sentencia->bindParam(3, $origen);
                 $sentencia->bindParam(4, $destino);
@@ -165,6 +182,58 @@ class PersonaModel extends DB{
       return $e->getMessage();
     }
 
+  }
+
+
+  function updateReserPSE($id_res, $monto, $email, $banco){
+    try{
+      $pago = "PAGADO";
+
+      $sentencia = $this->connect()->prepare("INSERT INTO pse (correopagador, bancoapagar, monto, id_res) 
+              VALUES (?, ?, ?, ?)");
+      $sentencia->bindParam(1, $email);
+      $sentencia->bindParam(2, $banco);
+      $sentencia->bindParam(3, $monto);
+      $sentencia->bindParam(4, $id_res);
+      $sentencia->execute();
+
+      $sentencia2 = $this->connect()->prepare("UPDATE pasaXreser SET estado_pago = ?
+                            WHERE nombre_reserva = ?");
+      $sentencia2->bindValue(1, $pago, PDO::PARAM_STR);
+      $sentencia2->bindValue(2, $id_res, PDO::PARAM_STR);
+      $sentencia2->execute();
+
+      return 1;
+    }catch(PDOException $e) {
+      return $e->getMessage();
+    }
+  }
+
+  function updateReserCREDIT($id_res, $monto, $banco, $fcad, $cvv, $numcard){
+    try{
+      $pago = "PAGADO";
+
+      $sentencia = $this->connect()->prepare("INSERT INTO tarjetacredito (numero, fechavencimiento, cvv, bancoapagar, monto, id_res) 
+              VALUES (?, ?, ?, ?, ?, ?)");
+      $sentencia->bindParam(1, $numcard);
+      $sentencia->bindParam(2, $fcad);
+      $sentencia->bindParam(3, $cvv);
+      $sentencia->bindParam(4, $banco);
+      $sentencia->bindParam(5, $monto);
+      $sentencia->bindParam(6, $id_res);
+      $sentencia->execute();
+
+      $sentencia2 = $this->connect()->prepare("UPDATE pasaXreser SET estado_pago = ?
+                            WHERE nombre_reserva = ?");
+      $sentencia2->bindValue(1, $pago, PDO::PARAM_STR);
+      $sentencia2->bindValue(2, $id_res, PDO::PARAM_STR);
+      $sentencia2->execute();
+
+
+      return 1;
+    }catch(PDOException $e) {
+      return $e->getMessage();
+    }
   }
 
   

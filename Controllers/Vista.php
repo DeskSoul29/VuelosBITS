@@ -25,7 +25,7 @@
         }
 
         function payments(){
-            require VW . DF . "mainH.html";
+            require VW . DF . "payHead.html";
             $this->view->render($this, "payments");
         }
 

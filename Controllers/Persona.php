@@ -58,5 +58,32 @@
             $res = $this->model->uploadPassenger($id_pas, $id_res);
             echo $res;
         }
-        
+
+        function updateResPSE(){
+            $id_res = $_POST['id_res'];
+            $monto = $_POST['monto'];
+            $email = $_POST['email'];
+            $banco = $_POST['banco'];
+
+            $res = $this->model->updateReserPSE($id_res, $monto, $email, $banco);
+            echo $res;
+        }
+        function updateResCREDIT(){
+            $id_res = $_POST['id_res'];
+            $monto = $_POST['monto'];
+            $banco = $_POST['banco'];
+            $fcad = $_POST['fcad'];
+            $cvv = $_POST['cvv'];
+            $numcard = $_POST['num'];
+
+            $res = $this->model->updateReserCREDIT($id_res, $monto, $banco, $fcad, $cvv, $numcard);
+            echo $res;
+        }
+
+        function addPay(){
+            session_start();
+
+            $_SESSION['id_reserva'] = $_POST['id_res'];
+            $_SESSION['precio_reserva'] = $_POST['monto'];
+        }
     }

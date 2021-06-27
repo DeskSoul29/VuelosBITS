@@ -14,12 +14,15 @@
             $pasajeroN= $_POST['Ninos'];
             $fecha= $_POST['Fecha'];
 
+            $piloto = 2000000;
+            $comOper = 1800000;
+            $comisar = 1500000;
+            $azafata = 1800000;
+            $combstible = 5782194;
+
 
             unset($_SESSION['id_reserva']);
             unset($_SESSION['precio_reserva']);
-            unset($_SESSION['cant_pasajeros']);
-            unset($_SESSION['org_res']);
-            unset($_SESSION['des_res']);
             
         }else if($rol=="PASAJERO"){
             header("location: ../Vista/viewUser" );
@@ -76,5 +79,73 @@
     </div>
 </header>
 
+<section>
+        <div class="col-md-12" >
+            <div class="row" >
+                <div class="col-12" style="background-color: rgb(243, 242, 246); height:499px; overflow:scroll; overflow-x:hidden">
+                    <div class="jxbuIk">
+
+                        <div class="row" id="cardRes">
+                            <?php
+                                $mysqli = new mysqli("localhost","desksoul","jcrn2917","db_vuelos");
+                                $resultado = $mysqli->query("SELECT vuelos.id_vuelo, vuelos.ciudad_origen_vuelo, vuelos.ciudad_destino_vuelo, vuelos.fecha_vuelo, COUNT(pasaXreser.estado_pago)as sum 
+                                        FROM vuelos
+                                            LEFT JOIN reserva ON reserva.vuelo_id = vuelos.id_vuelo
+                                            LEFT JOIN pasaXreser ON pasaXreser.nombre_reserva = reserva.nombre_reserva
+                                            WHERE pasaXreser.estado_pago= 'PAGADO' 
+                                            GROUP BY vuelos.id_vuelo; ");
+                                
+                                $row_cnt = $resultado->num_rows;
+                                $resultado->data_seek(0);
+                                    while ($fila = $resultado->fetch_assoc()) {
+                                        echo "
+                                        <div class='col-sm-4' style=' font-size: 10px;'>
+                                            <div class='card border-primary mb-3'>
+                                                <form action='generar/generar-pdf.php'>
+                                                    <div class='card-body' >
+                                                        <h5 class='card-title'><img src='/Resources/Images/viaje-ida-y-vuelta.png'> ".$fila['ciudad_origen_vuelo']." -> ".$fila['ciudad_destino_vuelo']."</h5>
+                                                        <div class='row'>
+                                                            <div class='col'>
+                                                                <ul class='list-group list-group-flush'>
+                                                                    <li class='list-group-item'><img src='/Resources/Images/estado-financiero.png'> ID Airplane: ".$fila['id_vuelo']."</li>
+                                                                    <li class='list-group-item'><img src='/Resources/Images/calendario.png'> Date: ".$fila['fecha_vuelo']."</li>
+                                                                    <li class='list-group-item'><img src='/Resources/Images/pasajero.png'> Passengers: ".$fila['sum']."</li>
+                                                                    <li class='list-group-item'><img src='/Resources/Images/money.png'> Value: $".number_format(($fila['sum'])*700000)."</li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class='col'>
+                                                                <ul class='list-group list-group-flush'>
+                                                                    <li class='list-group-item'> Pilot: $".number_format($piloto)."</li>
+                                                                    <li class='list-group-item'> Communications Operators: $".number_format($comOper)."</li>
+                                                                    <li class='list-group-item'> Commissar: $".number_format($comisar)."</li>
+                                                                    <li class='list-group-item'> Stewardess: $".number_format($azafata)."</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class='row'>
+                                                            <h6 class='card-header'>Fuel: $".number_format($combstible)." </h6>
+                                                            <h6 class='card-header'>Crew: $".number_format(($piloto*2)+($azafata*4)+($comisar*2)+$comOper)." </h6>
+                                                            <h6 class='card-header'>Total Earnings: $".number_format(($fila['sum'])*700000)."</h6>
+                                                        </div>
+                                                    </div>
+                                                    <div class='card-footer bg-transparent border-primary' style='align-content: center; display: grid;'>
+                                                        <a onclick='printReport();' class='btn btn-success' style='color: #fff;'>Print Report</a>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div> ";   
+                                    }
+                            ?>        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/Resources/JS/jquery-3.4.1.min.js"></script>
+<script src="/Resources/JS/toastr.min.js"></script>
+<script src="/Resources/JS/fnalBalan.js"></script>
 
 </main>

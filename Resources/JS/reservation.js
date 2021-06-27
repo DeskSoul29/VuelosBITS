@@ -10,6 +10,7 @@ function addReserv(id, origen, destino, fecha){
 	var precio = suma* 700000;
 
 	let reser = `
+	<from id='from-Reserv'>
 		<div id="reservCard" class="card " style="margin-top: 15px">
 			<div class="card-header" >
 				RESERVATION IN PROCESS
@@ -26,21 +27,23 @@ function addReserv(id, origen, destino, fecha){
 				</p>
 			</div>
 			<div class="card-footer text-muted">
-				<a href="#" onclick="createReserv('${id}','${origen}', '${destino}', ${suma}, ${precio});" class="btn btn-success" style="margin-left: 60px;">Next</a>
+				<a href="#"	id="btn-abrir-popup" onclick="createReserv('${id}','${origen}', '${destino}', ${suma}, ${precio});" class="btn btn-success" style="margin-left: 60px;">Next</a>
 				<a href="#" onclick="deleteReserv();" class="btn btn-warning" style="margin-left: 110px;">Change</a>
 			</div>
 		</div>
+		</from>
 	`;
 	$("#processR").append(reser)
 
 	document.getElementById("card").setAttribute("style","display: none;")
 
 }
-
 function createReserv(id, origen, destino, pasajeros, precio){
 	
 	let maleta = document.getElementById("pasaje").innerHTML;
 	var seleccion = $('input[name="cbox"]:checked').val();
+	var i =0;
+
 
 	var id_res = Math.floor(Math.random() * (10000 - 999)) + 999;
 
@@ -60,7 +63,7 @@ function createReserv(id, origen, destino, pasajeros, precio){
 	data.append("check",seleccion);
 
 
-	$.ajax({
+	var jqxhr = $.ajax({
 		url: "http://127.0.0.1:9000/Persona/uploadReservation",
 		data,
 		cache: false,
@@ -71,30 +74,29 @@ function createReserv(id, origen, destino, pasajeros, precio){
 	.done(function(respuesta){
 		if(respuesta != 1){
 			console.log(respuesta)
-		}else{
-			addPassengers(id_res, pasajeros);
 		}
-		location='payments';
 	})
 	.fail(function(resp){
 		console.log(resp.responseText);
 	})
-	.always(function(){
-		console.log("Complete");
-	});
-
+	.always(function(e){
+	})
+	jqxhr.then(addPassengers(id_res,pasajeros))
 }
 
-function addPassengers(id_res, pasajeros){
-	for (let i = 0; i < pasajeros; i++) {
-		var i_2 = i+1;
-		var texto = prompt("Passenger "+i_2+" -> Digite cedula");
+function addPassengers(id_res, pasajero){
+	for (let i = 0; i < pasajero; i++) {
+		var texto = prompt("Passenger -> Digite cedula");
+
+		while(texto == ""){
+			var texto = prompt("Passenger "+(i+1)+"-> Digite cedula");
+		}
  
 		let data = new FormData()
 		data.append("pasajero",texto);
 		data.append("id_res",id_res);
 
-		$.ajax({
+		var open = $.ajax({
 			url: "http://127.0.0.1:9000/Persona/uploadPassengers",
 			data,
 			cache: false,
@@ -102,6 +104,20 @@ function addPassengers(id_res, pasajeros){
 			processData: false,
 			type: 'POST',
 		})
+		.done(function(respuesta){
+			if(respuesta != 1){
+				toastr.error(respuesta)
+			}
+			event.preventDefault()
+		})
+		.fail(function(resp){
+			console.log(resp.responseText);
+		})
+		.always(function(){
+			console.log("Complete");
+		location='payments'
+
+		});
 	}
 }
 
@@ -122,31 +138,6 @@ function addBaggage(res){
 	document.getElementById("b2").checked = false;
 	document.getElementById("b3").checked = false;
 }
-
-/* document.getElementById("form_Pass").addEventListener("submit", function(event){
-	var cant = document.getElementById("num_pass").innerHTML;
-	cant = parseFloat(cant);
-	var bal = true;
-
-	var arr = new Array();
-
-	for (var i = 0; i < cant; i++) {
-		if(document.getElementById("passenger"+(i+1)).value == "Select"){
-			alert("There are missing values")
-			bal = false;
-			break
-		}
-	}
-
-	if(bal){
-		for (var j = 0; j < cant; j++) {
-			arr.push(document.getElementById("passenger"+j).value);
-		}
-	}
-	console.log(arr)
-	event.preventDefault();
-
-}); */
 
 
 document.getElementById("from-Search").addEventListener("submit", function(event){

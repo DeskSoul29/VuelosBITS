@@ -17,9 +17,6 @@
 
             unset($_SESSION['id_reserva']);
             unset($_SESSION['precio_reserva']);
-            unset($_SESSION['cant_pasajeros']);
-            unset($_SESSION['org_res']);
-            unset($_SESSION['des_res']);
             
         }else if($rol=="PASAJERO"){
             header("location: ../Vista/viewUser" );
@@ -200,6 +197,7 @@
             </article>            
         </div>
     </aside>
+   
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/Resources/JS/jquery-3.4.1.min.js"></script>
@@ -249,14 +247,13 @@
                                             <h5 class="card-title"><img src="/Resources/Images/viaje-ida-y-vuelta.png">
                                             ${element.ciudad_origen_vuelo} <img src="/Resources/Images/flecha-correcta.png" > ${element.ciudad_destino_vuelo}</h5>
                                             <a class="card-text"> <img src="/Resources/Images/tarjeta-de-embarque.png"> CODE: ${element.id_vuelo} </a><br>
-                                            <a class="card-text"> <img src="/Resources/Images/pasajero.png"> Passengers:  <a>  </a></a></br>
-                                            <a class="card-text"> <img src="/Resources/Images/money.png"> COP: $700.000 </a>
+                                            <a class="card-text"> <img src="/Resources/Images/pasajero.png"> Passengers: ${50 - element.suma}</a></br>
+                                            <a class="card-text"> <img src="/Resources/Images/money.png"> COP: $700,000 </a>
                                             <a href="#modal" onclick="addReserv(${element.id_vuelo}, '${element.ciudad_origen_vuelo}', '${element.ciudad_destino_vuelo}', '${element.fecha_vuelo}');" class="btn btn-primary" style="transition: all 0.15s linear; color:#ffff; right: 10px; position:absolute; bottom:10px; ">RESERVE</a>
                                         </div>
                                     </div>
                                 </div>
                                 `
-                                corregir(element.id_vuelo);
                             })
                             $("#card > option").remove()
                             $("#card").append(option)
@@ -278,60 +275,5 @@
             });
         });
     </script>
-
-    <script>
-        function corregir(id){
-
-            <?php
-                
-            ?>
-        }
-    </script>
-
-    <!-- <script>
-        var adult = parseFloat(document.getElementById("Adults").value);
-        var children = parseFloat(document.getElementById("Children").value);
-        var suma = adult + children;
-        document.getElementById("num_pass").innerHTML = suma;
-        
-        for (var i = 0; i < suma; i++) {
-            var Rpas = `
-                <div class="row">
-                    <div class="col" style="font-size:13px; margin-top:10px;">
-                        Passenger ${i+1}: 
-                        <select id="passenger${i+1}" onchange="verify(this)">
-                            <option> Select</option>
-                            ?php
-                            $mysqli = new mysqli("localhost","desksoul","jcrn2917","db_vuelos");
-                            $resultado = $mysqli->query("SELECT * FROM pasajero");
-                            $resultado->data_seek(0);
-                            while ($fila = $resultado->fetch_assoc()) {
-                                echo "<OPTION name='smov[]' VALUE='". $fila['cedula'] ."'>". $fila['cedula'] ." -  ".$fila['nombre']."</OPTION>"; 
-                            }
-                            ?
-                        </select>
-                    </div>
-                </div>
-            `;
-            $("#pas > Rpas").remove()
-            $("#pas").append(Rpas);
-        }
-        
-    </script>
-
-    <script type="text/javascript">
-    	function verify(s1) {
-    		var s2;
-    		for (var i=1;i<=3;i++) {
-    			s2 = document.getElementById('passenger' + i);
-    			if (s1.value == s2.value && s1 != s2) {
-    				alert('Repeated Value');
-    				s1.options[0].selected = true;
-    				return;
-    			}
-    		}
-    	}
-    </script> -->
-
 </main>
 

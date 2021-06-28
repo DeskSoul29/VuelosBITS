@@ -27,8 +27,9 @@ function addReserv(id, origen, destino, fecha){
 				</p>
 			</div>
 			<div class="card-footer text-muted">
-				<a href="#"	id="btn-abrir-popup" onclick="createReserv('${id}','${origen}', '${destino}', ${suma}, ${precio});" class="btn btn-success" style="margin-left: 60px;">Next</a>
-				<a href="#" onclick="deleteReserv();" class="btn btn-warning" style="margin-left: 110px;">Change</a>
+				<a href="#"	id="btn-abrir-popup" onclick="createReserv('${id}','${origen}', '${destino}', ${suma}, ${precio});" class="btn btn-success" style="margin-left: 5px;">Next</a>
+				<button id='btnpagar' onclick="pasar();" class="btn btn-danger" style="margin-left: 80px;" disabled>Pay</button>
+				<a href="#" onclick="deleteReserv();" class="btn btn-warning" style="margin-left: 80px;">Change</a>
 			</div>
 		</div>
 		</from>
@@ -38,11 +39,15 @@ function addReserv(id, origen, destino, fecha){
 	document.getElementById("card").setAttribute("style","display: none;")
 
 }
+
+function pasar(){
+	location='payments'
+}
+
 function createReserv(id, origen, destino, pasajeros, precio){
 	
 	let maleta = document.getElementById("pasaje").innerHTML;
 	var seleccion = $('input[name="cbox"]:checked').val();
-	var i =0;
 
 
 	var id_res = Math.floor(Math.random() * (10000 - 999)) + 999;
@@ -74,6 +79,8 @@ function createReserv(id, origen, destino, pasajeros, precio){
 	.done(function(respuesta){
 		if(respuesta != 1){
 			console.log(respuesta)
+		}else{
+			addPassengers(id_res, pasajeros);
 		}
 	})
 	.fail(function(resp){
@@ -81,7 +88,6 @@ function createReserv(id, origen, destino, pasajeros, precio){
 	})
 	.always(function(e){
 	})
-	jqxhr.then(addPassengers(id_res,pasajeros))
 }
 
 function addPassengers(id_res, pasajero){
@@ -107,18 +113,22 @@ function addPassengers(id_res, pasajero){
 		.done(function(respuesta){
 			if(respuesta != 1){
 				toastr.error(respuesta)
+			}else{
+				$("#btnpagar").removeAttr("disabled");
 			}
-			event.preventDefault()
 		})
 		.fail(function(resp){
 			console.log(resp.responseText);
 		})
 		.always(function(){
 			console.log("Complete");
-		location='payments'
 
 		});
 	}
+}
+
+function prevent(event){
+	event.preventDefault()
 }
 
 function deleteReserv(){

@@ -149,7 +149,7 @@
         <div class="col-md-12" >
             <div class="row" >
 
-                <div class="col-7" style="background-color: rgb(243, 242, 246); height:418px; overflow:scroll; overflow-x:hidden">                    
+                <div class="col-8" style="background-color: rgb(243, 242, 246); height:418px; overflow:scroll; overflow-x:hidden">                    
                     <div class="jxbuIk">
 
                         <div class="row">
@@ -163,7 +163,7 @@
                 </div>
 
 
-                <div id="processR" class="col-5 bg-success">
+                <div id="processR" class="col-4 bg-success">
                     <span id="span1">
                         <img src="/Resources/Images/aeroplane.png" style="display: block; margin:auto; margin-top: 120px;">
                         <h5 style="text-align: center; top:10px; color: #0c4e80">You have not yet selected a flight</h5>
